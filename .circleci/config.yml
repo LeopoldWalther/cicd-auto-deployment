@@ -1,10 +1,6 @@
 version: 2.1
 
-orbs:
-  welcome: circleci/welcome-orb@0.4.1
-
 commands:
-
 
 jobs:
   build-frontend:
@@ -15,7 +11,7 @@ jobs:
       - restore_cache:
           keys: [frontend-build]
       - run:
-          name: Build front-end
+          name: build front-end
           command: |
             cd frontend
             npm install
@@ -32,9 +28,9 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - run:
-          name: Back-end build
+          name: build back-end
           command: |
-             cd backend
+            cd backend
             npm install
             npm run build
       - save_cache:
@@ -43,7 +39,7 @@ jobs:
 
 
 workflows:
-  welcome:
+  default:
     jobs:
       - build-frontend
       - build-backend
