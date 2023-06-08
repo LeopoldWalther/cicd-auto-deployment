@@ -134,7 +134,7 @@ jobs:
               --output text)
             echo $BACKEND_PUBLIC_IP >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
-            
+
       - persist_to_workspace:
           root: ~/
           paths:
@@ -155,3 +155,5 @@ workflows:
           requires: [build-frontend]
       - scan-backend:
           requires: [build-backend]
+      - deploy-infrastructure:
+          requires: [scan-frontend, scan-backend]
