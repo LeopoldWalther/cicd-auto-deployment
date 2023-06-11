@@ -289,8 +289,7 @@ jobs:
           keys: [backend-build]
       - add_ssh_keys:
           fingerprints: ["3b:62:e3:62:6b:10:2e:d3:f6:e9:7e:37:38:59:a3:e8"]
-      - attach_workspace:
-          at: ~/
+      
       - run:
           name: Install aws cli
           command: |
@@ -325,6 +324,9 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
+
+      - attach_workspace:
+          at: ~/
 
       - revert-migrations
       - destroy-environment
