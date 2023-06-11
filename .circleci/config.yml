@@ -30,7 +30,7 @@ commands:
           when: on_fail
           command: |
             echo "Reverting Migrations: << parameters.Workflow_ID >> "
-            SUCCESS=$(curl "https://kvdb.io/3iu2eo512VqAaNCmcrbnkA//migration_<<parameters.workflow_id>>")
+            SUCCESS=$(curl "https://kvdb.io/3iu2eo512VqAaNCmcrbnkA//migration_<<parameters.Workflow_ID>>")
             if (($SUCCESS == 1)); then
               cd backend
               npm install
