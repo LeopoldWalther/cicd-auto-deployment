@@ -282,7 +282,7 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: cimg/python:3.7-node
+      - image: amazon/aws-cli
     steps:
       - checkout
       - restore_cache:
@@ -306,11 +306,11 @@ jobs:
             sudo apt install ansible -y
 
       - run:
-          name: Install tar gzip
+          name: Install additional dependency Node 
           command: |
             yum install -y tar gzip curl
             curl -sL https://rpm.nodesource.com/setup_10.x | bash -
-            yum install -y nodejs   
+            yum install -y nodejs     
 
       - run:
           name: Deploy backend
