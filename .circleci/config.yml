@@ -304,6 +304,14 @@ jobs:
             sudo apt install software-properties-common -y
             sudo add-apt-repository --yes --update ppa:ansible/ansible
             sudo apt install ansible -y
+
+      - run:
+          name: Install tar gzip
+          command: |
+            yum install -y tar gzip curl
+            curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+            yum install -y nodejs   
+
       - run:
           name: Deploy backend
           command: |
