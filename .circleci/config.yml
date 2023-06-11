@@ -21,8 +21,9 @@ commands:
   revert-migrations:
     description: Revert migrations given a workflow ID.
     parameters:
-      workflow_id:
+      Workflow_ID:
         type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}  
     steps:
       - run:
           name: Reverting migrations
@@ -171,8 +172,7 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
 
-      - destroy-environment:
-          workflow_id: '${CIRCLE_WORKFLOW_ID:0:7}'
+      - destroy-environment
 
   configure-infrastructure:
     docker:
@@ -210,8 +210,7 @@ jobs:
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml   
       
-      - destroy-environment:
-          workflow_id: '${CIRCLE_WORKFLOW_ID:0:7}' 
+      - destroy-environment
 
   run-migrations:
     docker:
@@ -242,10 +241,8 @@ jobs:
                 -d '0'
             fi
 
-      - revert-migrations:
-          workflow_id: '${CIRCLE_WORKFLOW_ID:0:7}'
-      - destroy-environment:
-          workflow_id: '${CIRCLE_WORKFLOW_ID:0:7}'
+      - revert-migrations
+      - destroy-environment
 
   deploy-frontend:
     docker:
@@ -316,11 +313,8 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
 
-      - revert-migrations:
-          workflow_id: '${CIRCLE_WORKFLOW_ID:0:7}'
-      - destroy-environment:
-          workflow_id: '${CIRCLE_WORKFLOW_ID:0:7}'
-
+      - revert-migrations
+      - destroy-environment
 
 workflows:
   default:
