@@ -1,0 +1,2 @@
+Github: https://github.com/LeopoldWalther/cicd-auto-deployment/tree/master
+Public URL for S3 Bucket: 
