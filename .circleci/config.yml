@@ -179,8 +179,7 @@ jobs:
       - destroy-environment
 
   configure-infrastructure:
-    docker:
-      - image: python:3.11-rc-alpine
+    executor: standard
         environment:
           - TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION')}}"
           - TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES')}}"
