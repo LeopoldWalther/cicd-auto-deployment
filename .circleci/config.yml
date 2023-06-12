@@ -1,21 +1,5 @@
 version: 2.1
 
-
-defaults: &defaults
-
-  docker:
-    - image: circleci/node:13.8.0
-  # working_directory: ~/
-
-executors:
-
-  python:
-    docker:
-      - image: python:3.9.0-alpine
-  aws:
-    docker:
-      - image: amazon/aws-cli
-
 commands:
 
   destroy-environment:
@@ -55,7 +39,8 @@ commands:
 
 jobs:
   build-frontend:
-    <<: *defaults
+    docker:
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -71,7 +56,8 @@ jobs:
           key: frontend-build
 
   build-backend:
-    <<: *defaults
+    docker:
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -87,7 +73,8 @@ jobs:
           key: backend-build
         
   test-frontend:
-    <<: *defaults
+    docker:
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -100,7 +87,8 @@ jobs:
             npm run test
 
   test-backend:
-    <<: *defaults
+    docker:
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -113,7 +101,8 @@ jobs:
             npm run test
 
   scan-frontend:
-    <<: *defaults
+    docker:
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -127,7 +116,8 @@ jobs:
             npm audit fix --audit-level=critical --force
 
   scan-backend:
-    <<: *defaults
+    docker:
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -142,42 +132,40 @@ jobs:
 
 
   deploy-infrastructure:
-    executor: aws
+    docker:
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
-          name: Install tar and gzip
+          name: install tar and gzip
           command: |
             yum -y install tar gzip
 
       - run:
-          name: Deploy back-end infrastructure
-          working_directory: ./.circleci/files
+          name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
-              --template-file backend.yml \
+              --template-file .circleci/files/backend.yml \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople
 
       - run:
-          name: Deploy front-end infrastructure
-          working_directory: ./.circleci/files
+          name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
-              --template-file frontend.yml \
+              --template-file .circleci/files/frontend.yml \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople
 
       - run:
           name: Add back-end ip to ansible inventory
-          working_directory: ./.circleci/ansible
           command: |
             aws ec2 describe-instances \
               --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> inventory.txt
+              --output text >> .circleci/ansible/inventory.txt
 
       - persist_to_workspace:
           root: ~/
@@ -188,7 +176,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: python:3.9.0-alpine
+      - image: python:3.11-rc-alpine
         environment:
           - TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION')}}"
           - TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES')}}"
@@ -199,68 +187,50 @@ jobs:
           - TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE')}}"
           - TYPEORM_MIGRATIONS: "{{ lookup('env', 'TYPEORM_MIGRATIONS')}}"
           - TYPEORM_MIGRATIONS_DIR: "{{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}"
-          
     steps:
       - checkout
-
       - add_ssh_keys:
           fingerprints: ["3b:62:e3:62:6b:10:2e:d3:f6:e9:7e:37:38:59:a3:e8"]
-
       - attach_workspace:
           at: ~/
       
       - run:
           name: Install dependencies
-          working_directory: ~/project/.circleci/ansible
           command: |
-            #apk add curl
-            #apk add --upgrade bash
+            apk add curl
+            apk add --upgrade bash
             apk add --update ansible
-            ansible --version
-            #apk add openssh-client
-            #pip3 install awscli
+            apk add openssh-client
+            pip3 install awscli
       
       - run:
           name: Configure server
-          working_directory: ~/project/.circleci/ansible
           command: |
+            cat ~/project/.circleci/ansible/inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
-            cat inventory.txt
-            ansible-playbook -i inventory.txt configure-server.yml   
+            ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml   
       
       - destroy-environment
 
   run-migrations:
-    <<: *defaults
+    docker:
+      - image: sleavely/node-awscli:14.x
     steps:
       - checkout
-
-      - attach_workspace:
-          at: ~/
-
       - restore_cache:
-          keys: [backend-build]
-
+          keys:
+            - build-backend
       - run:
-          name: Install AWS CLI
-          working_directory: /tmp
+          name: Run migrations
           command: |
-            sudo apt-get update && sudo apt-get install -yy less
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-
-      - run:
-          name: Run migration
-          working_directory: ./backend
-          command: |
+            cd backend
             npm i
             npm run build
             npm run migrations > migrations_dump.txt
             cat migrations_dump.txt
 
       - run:
-          name: Send migration status to kvdb.io
+          name: Send migration status to kvdb.io OR memstash.io
           command: |   
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
@@ -271,30 +241,19 @@ jobs:
                 -d '0'
             fi
 
+      - revert-migrations
       - destroy-environment
 
   deploy-frontend:
-    <<: *defaults
+    docker:
+      - image: amazon/aws-cli
     steps:
       - checkout
-
-      - attach_workspace:
-          at: ~/
-          
       - restore_cache:
           keys: [frontend-build]
 
       - run:
-          name: Install AWS CLI
-          working_directory: /tmp
-          command: |
-            sudo apt-get update && sudo apt-get install -yy less
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-
-      - run:
-          name: Install Node 
+          name: Install additional dependency Node 
           command: |
             yum install -y tar gzip curl
             curl -sL https://rpm.nodesource.com/setup_10.x | bash -
@@ -318,48 +277,51 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 
-      - persist_to_workspace:
-          root: project/
-          paths:
-            - frontend/dist
-
       - revert-migrations
       - destroy-environment
 
   deploy-backend:
-    executor: python
+    docker:
+      - image: amazon/aws-cli
     steps:
       - checkout
-
       - restore_cache:
           keys: [backend-build]
-
       - add_ssh_keys:
           fingerprints: ["3b:62:e3:62:6b:10:2e:d3:f6:e9:7e:37:38:59:a3:e8"]
-
-      - attach_workspace:
-          at: ~/
       
       - run:
-          name: Install ansible, curl, openssh, nodejs, npm, aws cli
+          name: Install aws cli
           command: |
-            apk add --update ansible curl rsync openssh nodejs npm
-            ansible --version
-            pip install awscli
-            aws --version
-   
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+      - run:
+          name: Install Ansible
+          command: |
+            sudo apt update
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y
+
+      - run:
+          name: Install additional dependency Node 
+          command: |
+            yum install -y tar gzip curl
+            curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+            yum install -y nodejs     
+
       - run:
           name: Deploy backend
-          working_directory: ./.circleci/ansible
           command: |
-            #cd backend
-            #npm i
-            #npm run build
-            #cd ..
+            cd backend
+            npm i
+            npm run build
+            cd ..
             ## Zip the directory
-            #tar -C backend -czvf artifact.tar.gz .
-            #cd .circleci/ansible
-            #echo "Contents  of the inventory.txt file is -------"
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
 
@@ -393,5 +355,5 @@ workflows:
           requires: [configure-infrastructure]
       - deploy-frontend:
           requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
+      #- deploy-backend:
+      #    requires: [run-migrations]
