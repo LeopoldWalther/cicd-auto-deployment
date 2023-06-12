@@ -6,7 +6,7 @@ executors:
       - image: circleci/node:13.8.0
   python:
     docker:
-      - image: python:3.9.0-alpine
+      - image: python:3.11-rc-alpine
   aws:
     docker:
       - image: amazon/aws-cli
@@ -179,7 +179,8 @@ jobs:
       - destroy-environment
 
   configure-infrastructure:
-    executor: standard
+    docker:
+      - image: python:3.11-rc-alpine
         environment:
           - TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION')}}"
           - TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES')}}"
