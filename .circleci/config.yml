@@ -1,5 +1,13 @@
 version: 2.1
 
+
+defaults: &defaults
+
+  docker:
+    - image: circleci/node:13.8.0
+  # working_directory: ~/
+
+
 commands:
 
   destroy-environment:
@@ -39,8 +47,7 @@ commands:
 
 jobs:
   build-frontend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
@@ -56,8 +63,7 @@ jobs:
           key: frontend-build
 
   build-backend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
@@ -73,8 +79,7 @@ jobs:
           key: backend-build
         
   test-frontend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
@@ -87,8 +92,7 @@ jobs:
             npm run test
 
   test-backend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
@@ -101,8 +105,7 @@ jobs:
             npm run test
 
   scan-frontend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
@@ -116,8 +119,7 @@ jobs:
             npm audit fix --audit-level=critical --force
 
   scan-backend:
-    docker:
-      - image: circleci/node:13.8.0
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
@@ -282,7 +284,7 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: amazon/aws-cli
+      - image: sleavely/node-awscli:14.x
     steps:
       - checkout
       - restore_cache:
