@@ -230,11 +230,18 @@ jobs:
           keys: [backend-build]
 
       - run:
-          name: Run migrations
+          name: Install AWS CLI
+          working_directory: /tmp
           command: |
-            cd backend
-            npm i
-            npm run build
+            sudo apt-get update && sudo apt-get install -yy less
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+
+      - run:
+          name: Run migrations
+          working_directory: ./backend
+          command: |
             npm run migrations > migrations_dump.txt
             cat migrations_dump.txt
 
@@ -316,7 +323,7 @@ jobs:
 
       - add_ssh_keys:
           fingerprints: ["3b:62:e3:62:6b:10:2e:d3:f6:e9:7e:37:38:59:a3:e8"]
-          
+
       - attach_workspace:
           at: ~/
       
