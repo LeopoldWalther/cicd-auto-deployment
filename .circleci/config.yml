@@ -344,8 +344,8 @@ jobs:
           command: |
             ## Zip the directory
             tar -C backend -czvf artifact.tar.gz .
-            
-        - run:
+
+      - run:
           name: Deploy backend
           command: |
             cd .circleci/ansible
