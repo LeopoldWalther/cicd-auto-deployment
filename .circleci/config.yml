@@ -226,16 +226,19 @@ jobs:
       - destroy-environment
 
   run-migrations:
-    docker:
-      - image: sleavely/node-awscli:14.x
+    executor: standard
     steps:
       - checkout
+
       - restore_cache:
-          keys:
-            - build-backend
+          keys: [backend-build]
+
+      - configure-environment
+
       - run:
           name: Run migrations
           command: |
+            pwd
             cd backend
             npm i
             npm run build
@@ -254,7 +257,6 @@ jobs:
                 -d '0'
             fi
 
-      - revert-migrations
       - destroy-environment
 
   deploy-frontend:
