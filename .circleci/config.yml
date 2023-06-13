@@ -266,7 +266,7 @@ jobs:
       - checkout
       
       - run:
-          name: Install additional dependency Node 
+          name: Install dependencies 
           command: |
             yum install -y tar gzip curl
             curl -sL https://rpm.nodesource.com/setup_10.x | bash -
@@ -292,6 +292,11 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./frontend/dist
 
       - revert-migrations
       - destroy-environment
