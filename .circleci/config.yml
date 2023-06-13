@@ -302,46 +302,52 @@ jobs:
       - destroy-environment
 
   deploy-backend:
-    executor: standard
+    executor: python
     steps:
       - checkout
       
       - add_ssh_keys:
           fingerprints: ["3b:62:e3:62:6b:10:2e:d3:f6:e9:7e:37:38:59:a3:e8"]
       
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt -y update
-            sudo apt install -y tar gzip curl unzip
-            sudo apt install -y software-properties-common
-            sudo apt install -y python3 python3-pip
-            python3 -m pip install --user ansible
-
-      - run:
-          name: Install aws-cli
-          command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-
       - attach_workspace:
           at: .
 
       - restore_cache:
           keys: [backend-build]
-      
+
+      - run:
+          name: Install dependencies
+          command: |
+            apk update
+            apk add --upgrade bash
+            apk add --update ansible
+            apk add openssh-client
+            apk add --no-cache tar npm gzip curl gcompat
+            apk add --no-cache python3 py3-pip
+            pip3 install --upgrade pip
+            pip3 install awscli
+            rm -rf /var/cache/apk/*
+            echo "Verify aws cli version"
+            aws --version
+                 
       - configure-environment
 
       - run:
-          name: Deploy backend
+          name: Build backend
           command: |
             cd backend
             npm install
             npm run build
-            cd ..
+
+      - run:
+          name: Create backend artefact
+          command: |
             ## Zip the directory
             tar -C backend -czvf artifact.tar.gz .
+            
+        - run:
+          name: Deploy backend
+          command: |
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
