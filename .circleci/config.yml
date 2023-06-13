@@ -188,7 +188,7 @@ jobs:
               --output text >> .circleci/ansible/inventory.txt
 
       - persist_to_workspace:
-          root: ~/
+          root: .
           paths:
             - project/.circleci/ansible/inventory.txt
 
@@ -200,7 +200,7 @@ jobs:
       - checkout
       
       - attach_workspace:
-          at: ~/
+          at: .
       
       - add_ssh_keys:
           fingerprints: ["3b:62:e3:62:6b:10:2e:d3:f6:e9:7e:37:38:59:a3:e8"]
@@ -264,15 +264,16 @@ jobs:
     executor: aws
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-build]
-
+      
       - run:
           name: Install additional dependency Node 
           command: |
             yum install -y tar gzip curl
             curl -sL https://rpm.nodesource.com/setup_10.x | bash -
             yum install -y nodejs    
+
+      - attach_workspace:
+          at: .
 
       - run:
           name: Get backend url
@@ -296,14 +297,19 @@ jobs:
       - destroy-environment
 
   deploy-backend:
-    executor: aws
+    executor: python
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
+      
       - add_ssh_keys:
           fingerprints: ["3b:62:e3:62:6b:10:2e:d3:f6:e9:7e:37:38:59:a3:e8"]
       
+      - attach_workspace:
+          at: .
+
+      - restore_cache:
+          keys: [backend-build]
+
       - run:
           name: Install aws cli
           command: |
@@ -340,7 +346,7 @@ jobs:
             ansible-playbook -i inventory.txt deploy-backend.yml
 
       - attach_workspace:
-          at: ~/
+          at: .
 
       - revert-migrations
       - destroy-environment
@@ -369,5 +375,5 @@ workflows:
           requires: [configure-infrastructure]
       - deploy-frontend:
           requires: [run-migrations]
-      #- deploy-backend:
-      #    requires: [run-migrations]
+      - deploy-backend:
+          requires: [deploy-frontend]
