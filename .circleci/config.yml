@@ -302,7 +302,8 @@ jobs:
       - destroy-environment
 
   deploy-backend:
-    executor: standard
+    docker:
+      - image: cimg/python:3.11.4-node
     steps:
       - checkout
       
@@ -318,14 +319,17 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt update
-            apt add --upgrade bash
-            apt add --update ansible
-            apt add openssh-client
-            apt add --no-cache tar npm gzip curl gcompat
-            apt add --no-cache python3 py3-pip
+            apk update
+            apk add --upgrade bash
+            apk add --update ansible
+            apk add openssh-client
+            apk add --no-cache tar npm gzip curl gcompat
+            apk add --no-cache python3 py3-pip
             pip3 install --upgrade pip
             pip3 install awscli
+            rm -rf /var/cache/apk/*
+            echo "Verify aws cli version"
+            aws --version
                  
       - configure-environment
 
