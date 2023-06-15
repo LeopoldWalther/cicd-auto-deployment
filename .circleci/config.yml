@@ -347,7 +347,6 @@ jobs:
             ## Zip the directory
             tar czf backend.tar.gz .
             pwd
-            ls
 
       - run:
           name: Deploy backend
