@@ -3,7 +3,7 @@
   - name: Copy files
     become: true
     copy:
-      src: /root/project/backend.tar.gz
+      src: /home/circleci/project/backend.tar.gz
       dest: /home/ubuntu/
 
   - name: Build backend
