@@ -1,4 +1,8 @@
 ---
+  - name: Upgrade npm
+    become: true
+    shell: |
+        npm install -g npm@latest
 
   - name: Copy files
     become: true
