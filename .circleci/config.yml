@@ -345,7 +345,7 @@ jobs:
           name: Create backend artefact
           command: |
             ## Zip the directory
-            tar -C backend -czvf artifact.tar.gz .
+            tar -C backend -czvf artifact.tar.gz ./project/
 
       - run:
           name: Deploy backend
