@@ -1,8 +1,4 @@
 ---
-  - name: Upgrade npm
-    become: true
-    shell: |
-        npm install -g npm@latest
 
   - name: Copy files
     become: true
@@ -16,7 +12,7 @@
         cd /home/ubuntu/
         pwd
         ls
-        npm i
+        npm install
         npm run build
 
   - name: Run server
