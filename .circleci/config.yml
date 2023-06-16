@@ -226,8 +226,7 @@ jobs:
       - destroy-environment
 
   run-migrations:
-    docker:
-      - image: sleavely/node-awscli:14.x
+    executor: standard
     steps:
       - checkout
 
@@ -302,8 +301,7 @@ jobs:
       - destroy-environment
 
   deploy-backend:
-    docker:
-      - image: cimg/python:3.11.4-node
+    executor: standard
     steps:
       - checkout
       
