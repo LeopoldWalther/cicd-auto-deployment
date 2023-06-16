@@ -23,6 +23,7 @@
   - name: Create directory for backend
     file: 
       path: /home/ubuntu/backend
+      state: directory
 
   - name: Copy files
     become: true
