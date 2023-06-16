@@ -1,7 +1,7 @@
 version: 2.1
 
 executors:
-  standard:
+  node:
     docker:
       - image: circleci/node:13.8.0
   python:
@@ -68,7 +68,7 @@ commands:
 jobs:
 
   build-frontend:
-    executor: standard
+    executor: node
     steps:
       - checkout
       - restore_cache:
@@ -84,7 +84,7 @@ jobs:
           key: frontend-build
 
   build-backend:
-    executor: standard
+    executor: node
     steps:
       - checkout
       - restore_cache:
@@ -100,7 +100,7 @@ jobs:
           key: backend-build
         
   test-frontend:
-    executor: standard
+    executor: node
     steps:
       - checkout
       - restore_cache:
@@ -113,7 +113,7 @@ jobs:
             npm run test
 
   test-backend:
-    executor: standard
+    executor: node
     steps:
       - checkout
       - restore_cache:
@@ -126,7 +126,7 @@ jobs:
             npm run test
 
   scan-frontend:
-    executor: standard
+    executor: node
     steps:
       - checkout
       - restore_cache:
@@ -139,7 +139,7 @@ jobs:
             npm audit fix --audit-level=critical --force
 
   scan-backend:
-    executor: standard
+    executor: node
     steps:
       - checkout
       - restore_cache:
@@ -361,18 +361,28 @@ jobs:
       - destroy-environment
 
   smoke-test:
-    docker:
-      # Lightweight Docker image 
+    executor: node
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            sudo apt -y update
+            sudo apt install -y tar gzip curl unzip
+            sudo apt install -y software-properties-common
+
       - run:
           name: Get backend url
           command: |
-            # your code here
+            # Fetch and prepare the BACKEND_IP env var
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+              return 0
+            else
+              return 1
+            fi
       - run:
           name: Backend smoke test.
           command: |
