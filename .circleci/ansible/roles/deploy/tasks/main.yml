@@ -25,16 +25,9 @@
         npm install
         npm run build
 
-  - name: Stop  running servers
-    ignore_errors: yes
-    shell: |
-      pm2 stop backend
-      pm2 stop default
-      pm2 delete backend
-
   - name: Run server
     become: true
     shell : |
         cd /home/ubuntu/backend
-        pm2 start npm --name backend -- start
-        pm2 ls
+        pm2 stop default
+        pm2 start npm -- start
