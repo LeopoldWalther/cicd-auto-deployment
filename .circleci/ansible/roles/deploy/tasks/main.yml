@@ -6,6 +6,7 @@
       upgrade: 'yes'
 
   - name: Install nodejs and npm
+    become: true
     apt:
       name: ["nodejs", "npm"]
       state: latest
@@ -47,7 +48,7 @@
     shell : |
         cd /home/ubuntu/backend
         pm2 stop default
-        pm2 start npm --name backend -- start
+        pm2 start npm --name backend s-- start
 
     environment:
       ENVIRONMENT: production
