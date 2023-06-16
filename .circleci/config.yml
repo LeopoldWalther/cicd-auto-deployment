@@ -367,7 +367,8 @@ jobs:
       - destroy-environment
 
   smoke-test:
-    executor: node
+    docker:
+      - image: cimg/python:3.11.4-node
     steps:
       - checkout
 
