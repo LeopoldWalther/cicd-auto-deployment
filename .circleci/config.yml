@@ -400,23 +400,10 @@ jobs:
             echo "${BACKEND_IP}"
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
-            sleep 80
-            curl "${API_URL}/api/status"
-            if curl "${API_URL}/api/status" | grep "ok"
-            then
-                exit 0
-            else
-                exit 1
-            fi    
-            
+
       - run:
           name: Backend smoke test.
           command: |
-            # Fetch and prepare the BACKEND_IP env var
-
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
-
             if curl "${API_URL}/api/status" | grep "ok"
             then
               return 0
@@ -437,6 +424,7 @@ jobs:
             else
               return 1
             fi
+            
             
       #- revert-migrations
       #- destroy-environment
@@ -466,6 +454,6 @@ workflows:
       - deploy-frontend:
           requires: [run-migrations]
       - deploy-backend:
-          requires: [deploy-frontend]
+          requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
