@@ -404,6 +404,7 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
+            echo "curl ${API_URL}/api/status"
             if curl "${API_URL}/api/status" | grep "ok"
             then
               return 0
@@ -424,7 +425,7 @@ jobs:
             else
               return 1
             fi
-            
+
             
       #- revert-migrations
       #- destroy-environment
