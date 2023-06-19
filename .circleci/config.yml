@@ -394,16 +394,13 @@ jobs:
       - configure-environment
 
       - run:
-          name: Get backend url
+          name: Backend smoke test.
           command: |
             export BACKEND_IP=$(cat ~/project/.circleci/ansible/inventory.txt | sed 1d)
             echo "${BACKEND_IP}"
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
 
-      - run:
-          name: Backend smoke test.
-          command: |
             if curl "${API_URL}/api/status" | grep "ok"
             then
               return 0
