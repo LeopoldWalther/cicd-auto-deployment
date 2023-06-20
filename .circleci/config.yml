@@ -3,10 +3,10 @@ version: 2.1
 executors:
   node:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:13.8.0 
   python:
     docker:
-      - image: python:3.11-rc-alpine
+      - image: python:3.7-alpine3.11
   aws:
     docker:
       - image: amazon/aws-cli:latest
@@ -72,13 +72,13 @@ jobs:
     executor: node
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-build]
+      #- restore_cache:
+      #    keys: [frontend-build]
       - run:
           name: build front-end
           command: |
             cd frontend
-            npm install
+            npm i
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
@@ -88,13 +88,13 @@ jobs:
     executor: node
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
+      #- restore_cache:
+      #    keys: [backend-build]
       - run:
           name: build back-end
           command: |
             cd backend
-            npm install
+            npm i
             npm run build
       - save_cache:
           paths: [backend/node_modules]
