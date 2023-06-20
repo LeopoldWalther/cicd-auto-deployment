@@ -242,6 +242,13 @@ jobs:
             - ./backend/.env
 
       - run:
+          name: Install dependencies
+          command: |
+            sudo apt -y update
+            sudo apt install -y tar gzip curl unzip
+            sudo apt install -y software-properties-common
+
+      - run:
           name: Run migrations
           command: |
             pwd
