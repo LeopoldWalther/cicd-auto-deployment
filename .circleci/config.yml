@@ -227,8 +227,7 @@ jobs:
       - destroy-environment
 
   run-migrations:
-    docker:
-      - image: sleavely/node-awscli:14.x
+    executor: node
     steps:
       - checkout
 
@@ -368,7 +367,7 @@ jobs:
 
   smoke-test:
     docker:
-      - image: cimg/python:3.11.4-node
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
 
