@@ -244,9 +244,11 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt -y update
-            sudo apt install -y tar gzip curl unzip
-            sudo apt install -y software-properties-common
+            apk add curl
+            apk add --upgrade bash
+            apk add --update ansible
+            apk add openssh-client
+            pip3 install awscli
 
       - run:
           name: Run migrations
