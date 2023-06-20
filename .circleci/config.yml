@@ -240,12 +240,6 @@ jobs:
           root: .
           paths:
             - ./backend/.env
-
-      - run:
-          name: Install curl
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y curl
           
       - run:
           name: Install AWS CLI
