@@ -316,19 +316,21 @@ jobs:
       - destroy-environment
 
   deploy-backend:
-    docker:
-      - image: cimg/python:3.11.4-node
+    executor: node
     steps:
       - checkout
-      
+
+      - restore_cache:
+          keys: [backend-build]
+
       - add_ssh_keys:
           fingerprints: ["3b:62:e3:62:6b:10:2e:d3:f6:e9:7e:37:38:59:a3:e8"]
       
       - attach_workspace:
           at: .
 
-      - restore_cache:
-          keys: [backend-build]
+      - configure-environment
+
 
       - run:
           name: Install dependencies
@@ -339,12 +341,6 @@ jobs:
             sudo apt install -y python3 python3-pip
             python3 -m pip install --user ansible
 
-      - run:
-          name: Install aws-cli
-          command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
                     
       - configure-environment
 
