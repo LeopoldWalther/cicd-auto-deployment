@@ -316,7 +316,7 @@ jobs:
       - destroy-environment
 
   deploy-backend:
-    executor: node
+    executor: python
     steps:
       - checkout
 
@@ -332,20 +332,13 @@ jobs:
       - configure-environment
 
       - run:
-          name: Install AWS CLI for possible rollback
+          name: Install dependencies
           command: |
-            curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-
-      - run:
-          name: Install Ansible
-          command: sudo apt-get update && sudo apt-get install -y ansible
-
-      - run:
-          name: Install tar, gzip, curl, and unzip
-          command: sudo apt-get install -y tar gzip curl unzip
-
+            apk add curl
+            apk add --upgrade bash
+            apk add --update ansible
+            apk add openssh-client
+            pip3 install awscli
                     
       - configure-environment
 
