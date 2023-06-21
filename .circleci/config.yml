@@ -341,6 +341,10 @@ jobs:
             pip3 install awscli
 
       - run:
+          name: Install tar and gzip
+          command: apk add --no-cache tar gzip
+
+      - run:
           name: Install Node.js
           command: apk add --update nodejs npm
                     
