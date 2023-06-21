@@ -339,6 +339,10 @@ jobs:
             apk add --update ansible
             apk add openssh-client
             pip3 install awscli
+
+      - run:
+          name: Install Node.js
+          command: apk add --update nodejs npm
                     
       - configure-environment
 
