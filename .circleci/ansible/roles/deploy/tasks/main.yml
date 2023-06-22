@@ -17,18 +17,10 @@
       dest: /home/ubuntu/web
       copy: no
 
-  - name: Build backend
+  - name: Running the server
     become: true
-    shell : |
-        cd /home/ubuntu/web
-        npm i
-        npm install
-        npm run build
-
-  - name: Run server
-    become: true
-    shell : |
-        cd /home/ubuntu/web
-        pm2 stop default
-        pm2 start npm -- start
-        #npm run start
+    shell: |
+      cd /home/ubuntu/
+      npm install
+      pm2 stop default
+      pm2 start npm -- start
