@@ -430,6 +430,32 @@ jobs:
       - revert-migrations
       - destroy-environment
 
+
+  cloudfront-update:
+    executor: python
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: .
+      
+      - run:
+          name: Install dependencies
+          command: |
+            pip3 install awscli
+
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --stack-name InitialStack \
+              --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udapeople
+
+      - revert-migrations
+      - destroy-environment
+
 workflows:
   default:
     jobs:
@@ -458,3 +484,5 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          requires: [smoke-test]
