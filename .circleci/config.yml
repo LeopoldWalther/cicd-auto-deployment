@@ -456,6 +456,12 @@ jobs:
     executor: python
     steps:
       - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            pip3 install awscli
+            
       - run:
           name: Get old stack workflow id
           command: |
