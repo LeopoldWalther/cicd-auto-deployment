@@ -9,11 +9,11 @@
     become: true
     copy:
       src: /root/project/backend.tar.gz
-      dest: /home/ubuntu/web
+      dest: /home/ubuntu
 
   - name: Unarchive backend files
     unarchive:
-      src: /home/ubuntu/web/backend.tar.gz
+      src: /home/ubuntu/backend.tar.gz
       dest: /home/ubuntu/web
       copy: no
 
