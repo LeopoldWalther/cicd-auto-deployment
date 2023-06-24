@@ -351,8 +351,6 @@ jobs:
           name: Install Node.js
           command: apk add --update nodejs npm
                     
-      - configure-environment
-
       - run:
           name: Build backend
           command: |
