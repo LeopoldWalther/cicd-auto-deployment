@@ -17,12 +17,13 @@
       dest: /home/ubuntu/web
       copy: no
 
-  - name: Running the server
+  - name: Start backend
     become: true
     shell: |
       cd /home/ubuntu/web
       npm install
-      npm run build
       pm2 stop default
       pm2 start npm -- start
+
+
 
