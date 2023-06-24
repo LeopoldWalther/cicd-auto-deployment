@@ -421,8 +421,7 @@ jobs:
             
             if curl -s ${URL} | grep "Welcome"
             then
-              # Change this to 0 after the job fails
-              return 1
+              return 0
             else
               return 1
             fi
@@ -436,9 +435,6 @@ jobs:
     steps:
       - checkout
 
-      - attach_workspace:
-          at: .
-      
       - run:
           name: Install dependencies
           command: |
@@ -455,6 +451,24 @@ jobs:
 
       - revert-migrations
       - destroy-environment
+
+  cleanup:
+    executor: python
+    steps:
+      - checkout
+      - run:
+          name: Get old stack workflow id
+          command: |
+            # your code here
+            export OldWorkflowID="the id here"
+            export STACKS=[] #put the list of stacks here
+      - run:
+          name: Remove old stacks and files
+          command: |
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            then
+              # your code here
+            fi
 
 workflows:
   default:
