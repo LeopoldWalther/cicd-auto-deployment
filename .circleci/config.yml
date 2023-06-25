@@ -447,7 +447,7 @@ jobs:
             echo "old wokflow ID: $OldWorkflowID"
             curl https://kvdb.io/3iu2eo512VqAaNCmcrbnkA/old_workflow_id \
                 --insecure \
-                -d ${OldWorkflowID:0:7}
+                -d ${OldWorkflowID:10:17}
 
       - run:
           name: Update cloudfront distribution
@@ -481,12 +481,12 @@ jobs:
             echo Stack names: "${STACKS[@]}"   
 
             export OldWorkflowID=$(curl --insecure https://kvdb.io/3iu2eo512VqAaNCmcrbnkA/old_workflow_id)
-            echo Old Workflow ID: ${OldWorkflowID:0:7} 
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID:0:7}" ]]
+            echo Old Workflow ID: ${OldWorkflowID} 
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID:0:7}"
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID:0:7}"
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             else
               echo "${OldWorkflowID}==${CIRCLE_WORKFLOW_ID:0:7}: no deletion as old workflow is new workflow"
             fi         
