@@ -471,12 +471,15 @@ jobs:
           command: |
             apk add curl
             apk add --upgrade bash
+            apk add --update ansible
+            apk add openssh-client
             pip3 install awscli
 
 
       - run:
           name: Remove old stacks and files
           command: |
+            #!/bin/bash
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             
