@@ -473,11 +473,28 @@ jobs:
             pip3 install awscli
 
       - run:
+          name: test 1
+          command: |
+            ## Fetch the stack names          
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            echo Stack names: "${STACKS[@]}"    
+
+      - run:
+          name: test 2
+          command: |
+            ## Fetch the stack names          
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            echo Stack names: "${STACKS[@]}"    
+
+            export OldWorkflowID=$(curl --insecure https://kvdb.io/3iu2eo512VqAaNCmcrbnkA/old_workflow_id)
+            echo Old Workflow ID: ${OldWorkflowID}       
+
+      - run:
           name: Remove old stacks and files
           command: |
             ## Fetch the stack names          
-            export STACKS=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
-            echo Stack names: "${STACKS[@]}"   
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            echo Stack names: "${STACKS[@]}"    
 
             export OldWorkflowID=$(curl --insecure https://kvdb.io/3iu2eo512VqAaNCmcrbnkA/old_workflow_id)
             echo Old Workflow ID: ${OldWorkflowID} 
