@@ -24,13 +24,3 @@
       npm install
       # pm2 stop default
       pm2 start npm -- start
-
-  - name: Start backend
-    become: true
-    shell: |
-      cd /home/ubuntu/web
-      pm2 start npm -- start
-
-  - name: Wait for 60 seconds
-    pause:
-      seconds: 60
