@@ -462,15 +462,13 @@ jobs:
       - destroy-environment
 
   cleanup:
-    docker:
-        - image: amazon/aws-cli
+    executor: aws
     steps:
       - checkout
 
       - run:
           name: Remove old stacks and files
           command: |
-            #!/bin/bash
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             
