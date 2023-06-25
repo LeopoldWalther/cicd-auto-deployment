@@ -462,19 +462,10 @@ jobs:
       - destroy-environment
 
   cleanup:
-    executor: python
+    docker:
+        - image: amazon/aws-cli
     steps:
       - checkout
-
-      - run:
-          name: Install dependencies
-          command: |
-            apk add curl
-            apk add --upgrade bash
-            apk add --update ansible
-            apk add openssh-client
-            pip3 install awscli
-
 
       - run:
           name: Remove old stacks and files
