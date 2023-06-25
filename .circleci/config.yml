@@ -436,6 +436,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            apk add curl
             pip3 install awscli
 
       - run:
@@ -468,6 +469,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            apk add curl
             pip3 install awscli
 
       - run:
