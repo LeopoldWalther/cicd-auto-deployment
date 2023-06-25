@@ -447,7 +447,7 @@ jobs:
             echo "old wokflow ID: $OldWorkflowID"
             curl https://kvdb.io/3iu2eo512VqAaNCmcrbnkA/old_workflow_id \
                 --insecure \
-                -d '${OldWorkflowID:0:7}'
+                -d ${OldWorkflowID:0:7}
 
       - run:
           name: Update cloudfront distribution
