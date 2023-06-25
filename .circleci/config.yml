@@ -470,6 +470,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add curl
+            apk add --upgrade bash
             pip3 install awscli
 
 
