@@ -23,14 +23,7 @@
       cd /home/ubuntu/web
       npm install
       pm2 stop default
-      echo "List before launching"
-      pm2 list
-      pm2 start npm -- start
-      echo "List after launching"
-      pm2 list
-      sleep 30
-      echo "Check if the application is still up after 30s"
-      pm2 list
+      pm2 start /home/ubuntu/web/index.js -f
 
   - name: Wait for 60 seconds
     pause:
