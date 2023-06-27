@@ -22,10 +22,9 @@
     shell: |
       cd /home/ubuntu/web
       npm install
-      pm2 stop default
+      #npm install reflect-metadata@0.1.12 ajv@^6.9.1 winston@2.x.x
+      #pm2 stop default
       pm2 start npm -- start
-
-      # /etc/systemd/system/alertmanager.service
 
   - name: Wait for 60 seconds
     pause:

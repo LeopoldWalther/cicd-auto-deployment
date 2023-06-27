@@ -1,1 +1,1 @@
-Public URL for S3 Bucket: http://54.205.243.115:3030
+Public URL for S3 Bucket: http://udapeople-5b7a3d0.s3-website-us-east-1.amazonaws.com
